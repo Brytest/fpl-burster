@@ -1,0 +1,19 @@
+{
+  "name": "fpl-burster",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Standalone Fantasy Premier League bot for deadline alerts, price changes, live points, and mini-league standings — runs on GitHub Actions.",
+  "main": "index.js",
+  "scripts": {
+    "deadline-alerts": "node jobs/deadlineAlerts.js",
+    "price-changes": "node jobs/priceChanges.js",
+    "live-points": "node jobs/livePoints.js",
+    "league-standings": "node jobs/leagueStandings.js"
+  },
+  "engines": {
+    "node": ">=20"
+  },
+  "dependencies": {
+    "ioredis": "^5.4.1"
+  }
+}
