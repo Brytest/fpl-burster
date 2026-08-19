@@ -1,5 +1,5 @@
 'use strict';
-
+require('dotenv').config();
 const fpl = require('../lib/fplClient');
 const { postBoth } = require('../lib/posters');
 const {
@@ -7,6 +7,7 @@ const {
   getLastPostedStandingsEvent,
   setLastPostedStandingsEvent,
 } = require('../lib/fplStorage');
+const { withCaption } = require('../lib/branding');
 
 // Comma-separated list of classic mini-league IDs, e.g. "12345,67890"
 const LEAGUE_IDS = (process.env.FPL_LEAGUE_IDS || '')
@@ -58,7 +59,7 @@ async function run() {
         ),
       ];
 
-      await postBoth(lines.join('\n'));
+      await postBoth(withCaption(lines.join('\n'), 'leagueStandings'));
       await setLastPostedStandingsEvent(store, leagueId, current.id);
       console.log(`[leagueStandings] posted league ${leagueId} standings`);
     }

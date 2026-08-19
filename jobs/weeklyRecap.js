@@ -1,9 +1,10 @@
 'use strict';
-
+require('dotenv').config();
 const fpl = require('../lib/fplClient');
 const { postBoth } = require('../lib/posters');
 const { openStore, wasWeeklyPostSent, markWeeklyPostSent } = require('../lib/fplStorage');
 const { getMostRecentFinishedEvent, getPlayersById } = require('../lib/fplAnalytics');
+const { withCaption } = require('../lib/branding');
 
 const JOB = 'weeklyRecap';
 
@@ -64,7 +65,7 @@ async function run() {
 
     lines.push('', 'Who was your hero this week? 👇');
 
-    await postBoth(lines.join('\n'));
+    await postBoth(withCaption(lines.join('\n'), 'weeklyRecap'));
     await markWeeklyPostSent(store, JOB, finished.id);
     console.log(`[weeklyRecap] posted GW${finished.id} recap`);
   } finally {

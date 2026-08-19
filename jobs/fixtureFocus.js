@@ -1,5 +1,6 @@
 'use strict';
 
+require('dotenv').config();
 const fpl = require('../lib/fplClient');
 const { postBoth } = require('../lib/posters');
 const { openStore, wasWeeklyPostSent, markWeeklyPostSent } = require('../lib/fplStorage');
@@ -8,6 +9,7 @@ const {
   computeFixtureDifficulty,
   topByField,
 } = require('../lib/fplAnalytics');
+const { withCaption } = require('../lib/branding');
 
 const JOB = 'fixtureFocus';
 const LOOKAHEAD_GWS = 5;
@@ -74,7 +76,7 @@ async function run() {
 
     lines.push('', 'Who gets the armband? 👇');
 
-    await postBoth(lines.join('\n'));
+    await postBoth(withCaption(lines.join('\n'), 'fixtureFocus'));
     await markWeeklyPostSent(store, JOB, next.id);
     console.log(`[fixtureFocus] posted GW${next.id} fixture focus`);
   } finally {

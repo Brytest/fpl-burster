@@ -1,5 +1,5 @@
 'use strict';
-
+require('dotenv').config();
 const fpl = require('../lib/fplClient');
 const { postBoth } = require('../lib/posters');
 const {
@@ -7,6 +7,7 @@ const {
   getLastKnownPrices,
   setLastKnownPrices,
 } = require('../lib/fplStorage');
+const { withCaption } = require('../lib/branding');
 
 async function run() {
   const store = openStore();
@@ -51,7 +52,7 @@ async function run() {
     if (risers.length) lines.push('', '📈 Risers:', ...risers.map((r) => `↑ ${r}`));
     if (fallers.length) lines.push('', '📉 Fallers:', ...fallers.map((f) => `↓ ${f}`));
 
-    await postBoth(lines.join('\n'));
+    await postBoth(withCaption(lines.join('\n'), 'priceChanges'));
     await setLastKnownPrices(store, currentPrices);
     console.log(
       `[priceChanges] posted ${risers.length} risers, ${fallers.length} fallers`

@@ -8,6 +8,7 @@ const {
   computeFixtureDifficulty,
   topByField,
 } = require('../lib/fplAnalytics');
+const { withCaption } = require('../lib/branding');
 
 const JOB = 'deadlineTips';
 const LOOKAHEAD_GWS = 5;
@@ -94,7 +95,7 @@ async function run() {
 
     lines.push('', 'Last-minute changes? Drop your team below! 👇');
 
-    await postBoth(lines.join('\n'));
+    await postBoth(withCaption(lines.join('\n'), 'deadlineTips'));
     await markWeeklyPostSent(store, JOB, next.id);
     console.log(`[deadlineTips] posted GW${next.id} deadline tips`);
   } finally {

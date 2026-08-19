@@ -1,5 +1,6 @@
 'use strict';
 
+require('dotenv').config();
 const fpl = require('../lib/fplClient');
 const { postBoth } = require('../lib/posters');
 const {
@@ -7,6 +8,7 @@ const {
   wasDeadlineAlertSent,
   markDeadlineAlertSent,
 } = require('../lib/fplStorage');
+const { withCaption } = require('../lib/branding');
 
 const HOUR_MS = 60 * 60 * 1000;
 
@@ -61,7 +63,7 @@ async function run() {
           ? `⏰ FINAL CALL — GW${upcoming.id} deadline is in ${label}! (${deadlineStr} UK). Lock in your transfers now.`
           : `📅 Reminder: GW${upcoming.id} deadline is in ${label} — ${deadlineStr} UK. Get your team sorted.`;
 
-      await postBoth(text);
+      await postBoth(withCaption(text, 'deadlineAlerts'));
       await markDeadlineAlertSent(store, upcoming.id, stage.key);
       console.log(`[deadlineAlerts] posted GW${upcoming.id} ${stage.key} alert`);
     }

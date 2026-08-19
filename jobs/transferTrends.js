@@ -1,8 +1,9 @@
 'use strict';
-
+require('dotenv').config();
 const fpl = require('../lib/fplClient');
 const { postBoth } = require('../lib/posters');
 const { openStore, wasWeeklyPostSent, markWeeklyPostSent } = require('../lib/fplStorage');
+const { withCaption } = require('../lib/branding');
 
 const JOB = 'transferTrends';
 
@@ -60,7 +61,7 @@ async function run() {
       'Are you making moves this week? 🤔',
     ];
 
-    await postBoth(lines.join('\n'));
+    await postBoth(withCaption(lines.join('\n'), 'transferTrends'));
     await markWeeklyPostSent(store, JOB, next.id);
     console.log(`[transferTrends] posted GW${next.id} transfer trends`);
   } finally {

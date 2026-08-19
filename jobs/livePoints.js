@@ -1,5 +1,5 @@
 'use strict';
-
+require('dotenv').config();
 const fpl = require('../lib/fplClient');
 const { postBoth } = require('../lib/posters');
 const {
@@ -9,6 +9,7 @@ const {
   wasFinishedSummaryPosted,
   markFinishedSummaryPosted,
 } = require('../lib/fplStorage');
+const { withCaption } = require('../lib/branding');
 
 // A player's live total_points jumping by this much in one poll almost
 // always means a goal, assist, or bonus reveal — worth a post. Smaller
@@ -58,7 +59,7 @@ async function run() {
       }
 
       if (notable.length) {
-        await postBoth(`🔴 Live GW${current.id} updates\n\n${notable.join('\n')}`);
+        await postBoth(withCaption(`🔴 Live GW${current.id} updates\n\n${notable.join('\n')}`, 'livePoints'));
         console.log(`[livePoints] posted ${notable.length} notable jumps`);
       } else {
         console.log('[livePoints] no notable point jumps this poll');
@@ -87,7 +88,7 @@ async function run() {
       ...top.map((e, i) => `${i + 1}. ${e.player.web_name} — ${e.points} pts`),
     ];
 
-    await postBoth(lines.join('\n'));
+    await postBoth(withCaption(lines.join('\n'), 'livePoints'));
     await markFinishedSummaryPosted(store, current.id);
     await setLiveSnapshot(store, current.id, currentSnapshot);
     console.log(`[livePoints] posted GW${current.id} finished summary`);

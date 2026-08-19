@@ -1,9 +1,10 @@
 'use strict';
-
+require('dotenv').config();
 const fpl = require('../lib/fplClient');
 const { postBoth } = require('../lib/posters');
 const { openStore, wasWeeklyPostSent, markWeeklyPostSent } = require('../lib/fplStorage');
 const { formatMoney, topByField } = require('../lib/fplAnalytics');
+const { withCaption } = require('../lib/branding');
 
 const JOB = 'hiddenGems';
 const LOW_OWNERSHIP_PCT = 10;
@@ -70,7 +71,7 @@ async function run() {
 
     lines.push("Who's your differential? 👇");
 
-    await postBoth(lines.join('\n'));
+    await postBoth(withCaption(lines.join('\n'), 'hiddenGems'));
     await markWeeklyPostSent(store, JOB, next.id);
     console.log(`[hiddenGems] posted GW${next.id} hidden gems`);
   } finally {
