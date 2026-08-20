@@ -2,13 +2,13 @@
 
 const fpl = require('../lib/fplClient');
 const { postBoth } = require('../lib/posters');
+const { withCaption } = require('../lib/branding');
 const { openStore, wasWeeklyPostSent, markWeeklyPostSent } = require('../lib/fplStorage');
 const {
   getTeamsById,
   computeFixtureDifficulty,
   topByField,
 } = require('../lib/fplAnalytics');
-const { withCaption } = require('../lib/branding');
 
 const JOB = 'deadlineTips';
 const LOOKAHEAD_GWS = 5;
@@ -65,6 +65,15 @@ async function run() {
         p.id !== captainPick?.player.id && parseFloat(p.selected_by_percent) < 30
     );
 
+    if (!flagged.length && !captainPick && !transferSuggestion) {
+      // No player stats exist yet (pre-season) and no injury news either —
+      // a post with an empty "Final tips" section isn't worth sending.
+      console.log(
+        `[deadlineTips] no injury news, captain pick, or transfer suggestion available yet for GW${next.id}, skipping`
+      );
+      return;
+    }
+
     const lines = [`⏰ DEADLINE TOMORROW — GW${next.id} ⏰`, ''];
 
     if (flagged.length) {
@@ -95,9 +104,15 @@ async function run() {
 
     lines.push('', 'Last-minute changes? Drop your team below! 👇');
 
-    await postBoth(withCaption(lines.join('\n'), 'deadlineTips'));
-    await markWeeklyPostSent(store, JOB, next.id);
-    console.log(`[deadlineTips] posted GW${next.id} deadline tips`);
+    const { anySucceeded } = await postBoth(withCaption(lines.join('\n'), 'deadlineTips'));
+    if (anySucceeded) {
+      await markWeeklyPostSent(store, JOB, next.id);
+      console.log(`[deadlineTips] posted GW${next.id} deadline tips`);
+    } else {
+      console.error(
+        `[deadlineTips] GW${next.id} failed on all platforms — not marking as sent, will retry next run`
+      );
+    }
   } finally {
     await store.close();
   }
